@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Crop Recommendation</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select {
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e8;
+            border-radius: 4px;
+            display: none;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>AI-Based Crop Recommendation for Farmers</h1>
+
+    <form id="cropForm">
+        <label>Latitude:</label>
+        <input type="number" id="latitude" step="0.0001" required>
+
+        <label>Longitude:</label>
+        <input type="number" id="longitude" step="0.0001" required>
+
+        <label>Soil pH:</label>
+        <input type="number" id="soil_ph" step="0.1" min="0" max="14" required>
+
+        <label>Season:</label>
+        <select id="season">
+            <option value="0">Winter</option>
+            <option value="1">Summer</option>
+            <option value="2">Monsoon</option>
+        </select>
+
+        <button type="submit">Get Recommendation</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+document.getElementById("cropForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const payload = {
+        latitude: parseFloat(latitude.value),
+        longitude: parseFloat(longitude.value),
+        soil_ph: parseFloat(soil_ph.value),
+        season: parseInt(season.value)
+    };
+
+    try {
+        const response = await fetch("http://localhost:5000/recommend", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error("Server error");
+
+        const data = await response.json();
+
+        let html = "<h3>Top Crop Recommendations</h3><ul>";
+        data.recommendations.forEach(r => {
+            html += `<li><b>${r.crop}</b> — ${r.confidence}%</li>`;
+        });
+        html += "</ul>";
+
+        html += `
+            <p><strong>Weather Data Used:</strong><br>
+            Temperature: ${data.weather_used.temperature} °C<br>
+            Humidity: ${data.weather_used.humidity} %<br>
+            Rainfall: ${data.weather_used.rainfall} mm
+            </p>
+        `;
+
+        result.style.display = "block";
+        result.innerHTML = html;
+
+    } catch (err) {
+        result.style.display = "block";
+        result.innerHTML = "<p style='color:red;'>Backend not reachable. Is Flask running?</p>";
+    }
+});
+</script>
+</body>
+</html>
