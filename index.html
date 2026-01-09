@@ -94,14 +94,11 @@ document.getElementById("cropForm").addEventListener("submit", async (e) => {
     };
 
     try {
-        const response = await fetch(
-            "https://crop-backend.onrender.com/recommend",
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            }
-        );
+        const response = await fetch("/recommend", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
 
         if (!response.ok) throw new Error("Server error");
 
@@ -127,12 +124,14 @@ document.getElementById("cropForm").addEventListener("submit", async (e) => {
     } catch (err) {
         result.style.display = "block";
         result.innerHTML =
-            "<p style='color:red;'>Backend not reachable. Check backend URL.</p>";
+            "<p style='color:red;'>Backend not reachable.</p>";
         console.error(err);
     }
 });
 </script>
 
+
 </body>
 </html>
+
 
