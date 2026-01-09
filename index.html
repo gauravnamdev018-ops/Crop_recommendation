@@ -93,13 +93,15 @@ document.getElementById("cropForm").addEventListener("submit", async (e) => {
         season: parseInt(season.value)
     };
 
-    try {
-        const response = await fetch("/recommend", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
+   try {
+            const response = await fetch(
+                "https://crop-backend2-v2wo.onrender.com/recommend",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                }
+            );
         if (!response.ok) throw new Error("Server error");
 
         const data = await response.json();
@@ -133,5 +135,6 @@ document.getElementById("cropForm").addEventListener("submit", async (e) => {
 
 </body>
 </html>
+
 
 
